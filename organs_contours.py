@@ -80,3 +80,6 @@ if __name__ == "__main__":
 
         # Adding lesions with most priority
         organs_np_copy[label_np == 1] = 1
+        out_seg = nibabel.Nifti1Image(organs_np_copy, affine=total_organs.affine)
+
+        nibabel.save(out_seg, join(new_labels_path, f"{name}.nii.gz"))
