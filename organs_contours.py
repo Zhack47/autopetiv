@@ -38,8 +38,8 @@ if __name__ == "__main__":
                               }
 
 
-    for name in tqdm(names[:2]):
-        print(name)
+    for patient_name in tqdm(names[:2]):
+        print(patient_name)
 
         reverse_hgc_map = {}
         reverse_total_map = {}
@@ -48,11 +48,11 @@ if __name__ == "__main__":
         for key, value in class_map["head_glands_cavities"].items():
            reverse_hgc_map[value] = key
         
-        ct_path = join(root_path, "imagesTr", f"{name}_0000.nii.gz")
-        label_path = join(root_path, "imagesTr", f"{name}_0000.nii.gz")
+        ct_path = join(root_path, "imagesTr", f"{patient_name}_0000.nii.gz")
+        label_path = join(root_path, "imagesTr", f"{patient_name}_0000.nii.gz")
         new_labels_path = '/mnt/disk_2/Zach/Autopet_supplementary_labels'
 
-        output_seg_path = join(new_labels_path, f"{name}_New_Labels.nii.gz")
+        output_seg_path = join(new_labels_path, f"{patient_name}_New_Labels.nii.gz")
         total_organs = totalsegmentator(ct_path, output_seg_path, task='total',
                                   roi_subset=['brain','liver', 'kidney_left', 'kidney_right', 'urinary_bladder',
                                               'prostate', 'spleen', 'pancreas', 'duodenum', 'small_bowel', 'colon',
@@ -82,4 +82,4 @@ if __name__ == "__main__":
         organs_np_copy[label_np == 1] = 1
         out_seg = nibabel.Nifti1Image(organs_np_copy, affine=total_organs.affine)
 
-        nibabel.save(out_seg, join(new_labels_path, f"{name}.nii.gz"))
+        nibabel.save(out_seg, join(new_labels_path, f"{patient_name}.nii.gz"))
