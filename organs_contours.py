@@ -38,7 +38,7 @@ if __name__ == "__main__":
                               }
 
 
-    for patient_name in tqdm(names[:2]):
+    for patient_name in tqdm(names):
         print(patient_name)
 
         reverse_hgc_map = {}
