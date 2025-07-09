@@ -33,8 +33,8 @@ if __name__ == "__main__":
                           'digestive_system': ['small_bowel', 'colon', 'duodenum', 'gallbladder', 'stomach'],
                           'pancreas':['pancreas'], 'prostate': ['prostate'], "skeleton": bones,
                           "heart_aorta": heart_aorta, 'lungs': lungs}
-    mapping_to_autopet_hgc = {'parotid_gland': ["parotid_gland_left", "parotid_gland_right"],
-                              'submandibular_gland': ["submandibular_gland_left", "submandibular_gland_right"]
+    mapping_to_autopet_hgc = {'parotid_glands': ["parotid_gland_left", "parotid_gland_right"],
+                              'submandibular_glands': ["submandibular_gland_left", "submandibular_gland_right"]
                               }
 
 
