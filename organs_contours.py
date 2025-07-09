@@ -43,9 +43,9 @@ if __name__ == "__main__":
 
         reverse_hgc_map = {}
         reverse_total_map = {}
-        for key, value in class_map["total"]:
+        for key, value in class_map["total"].items():
            reverse_total_map[value] = key
-        for key, value in class_map["head_glands_cavities"]:
+        for key, value in class_map["head_glands_cavities"].items():
            reverse_hgc_map[value] = key
         
         ct_path = join(root_path, "imagesTr", f"{name}_0000.nii.gz")
