@@ -34,7 +34,7 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
         point_map_neg[(b_click[0],b_click[1],b_click[2])]=1
     heatmap_pos =  gaussian_filter(point_map_pos, 6)
     heatmap_neg =  gaussian_filter(point_map_neg, 6)
-    heatmap_pos[ref<=2.5] = 0
+    heatmap_pos[ref<=4] = 0
     heatmap_neg[heatmap_pos!=0] = 0
     max_pos = np.max(heatmap_pos)
     max_neg = np.max(heatmap_neg)
