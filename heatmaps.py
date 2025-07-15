@@ -28,12 +28,9 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
     ref_affine = pet_nii.affine
     point_map_pos = np.zeros(ref_shape)
     point_map_neg = np.zeros(ref_shape)
-    print(ref_shape)
     for t_click in tumor_clicks:
-        print(t_click)
         point_map_pos[(t_click[0],t_click[1],t_click[2])]=1
     for b_click in bg_clicks:
-        print(b_click)
         point_map_neg[(b_click[0],b_click[1],b_click[2])]=1
     heatmap_pos =  gaussian_filter(point_map_pos, 6)
     heatmap_neg =  gaussian_filter(point_map_neg, 6)
