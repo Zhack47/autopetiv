@@ -39,7 +39,12 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
     heatmap_neg =  gaussian_filter(point_map_neg, 6)
     heatmap_pos[ref<=2.5] = 0
     heatmap_neg[heatmap_pos!=0] = 0
-    heatmap = heatmap_pos/np.max(heatmap_pos) - heatmap_neg/np.max(heatmap_neg)
+    max_pos = np.max(heatmap_pos)
+    max_neg = np.max(heatmap_neg)
+    if max_pos:
+        heatmap = heatmap_pos/max_pos - heatmap_neg/max_neg
+    else:
+        heatmap = - heatmap_neg/max_neg
     out = nib.Nifti1Image(heatmap, affine=ref_affine)
     nib.save(out, output_path)
 
