@@ -2,6 +2,7 @@ import os
 import json
 import nibabel as nib
 import numpy as np
+from scipy.ndimage import gaussian_filter
 
 
 def get_coords(json_path):
@@ -28,9 +29,10 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
     heatmap = np.zeros(ref_shape)
     print(ref_shape)
     for t_click in tumor_clicks:
-        heatmap[*t_click]=1
+        heatmap[tuple(t_click)]=1
     for b_click in bg_clicks:
-        heatmap[*b_click]=-1
+        heatmap[tuple(b_click)]=-1
+    heatmap = gaussian_filter(heatmap, 6)
     out = nib.Nifti1Image(heatmap, affine=ref_affine)
     nib.save(out, output_path)
 
