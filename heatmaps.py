@@ -51,6 +51,7 @@ images_root_path = "/mnt/disk_2/Zach/autopetIV/imagesTr"
 for json_path in sorted(os.listdir(json_root_path))[:4]:
     tumor_clicks, bg_clicks = get_coords(os.path.join(json_root_path, json_path))
     pet_path = os.path.join(images_root_path, json_path.replace("_clicks.json", "_0001.nii.gz"))
+    print(json_path.replace("_clicks.json", "_0002.nii.gz").replace("FDG_PSMA_PETCT_pre-simulated_clicks/", "/mnt/disk_2/Zach/Autopet_Heatmaps"))
     save_heatmap(pet_path, tumor_clicks, bg_clicks, json_path.replace("_clicks.json", "_0002.nii.gz").replace("FDG_PSMA_PETCT_pre-simulated_clicks/", "/mnt/disk_2/Zach/Autopet_Heatmaps"))
 
 
