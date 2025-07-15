@@ -1,7 +1,8 @@
 import os
 import json
-import nibabel as nib
 import numpy as np
+import nibabel as nib
+from tqdm import tqdm
 from scipy.ndimage import gaussian_filter
 
 
@@ -32,7 +33,7 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
         point_map_pos[(t_click[0],t_click[1],t_click[2])]=1
     for b_click in bg_clicks:
         point_map_neg[(b_click[0],b_click[1],b_click[2])]=1
-    heatmap_pos =  gaussian_filter(point_map_pos, 6)
+    heatmap_pos =  gaussian_filter(point_map_pos, 3)
     heatmap_neg =  gaussian_filter(point_map_neg, 6)
     heatmap_pos[ref<=4] = 0
     heatmap_neg[heatmap_pos!=0] = 0
@@ -48,7 +49,7 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
 
 json_root_path = "FDG_PSMA_PETCT_pre-simulated_clicks"
 images_root_path = "/mnt/disk_2/Zach/autopetIV/imagesTr"
-for json_path in sorted(os.listdir(json_root_path))[:4]:
+for json_path in tqdm(sorted(os.listdir(json_root_path))):
     tumor_clicks, bg_clicks = get_coords(os.path.join(json_root_path, json_path))
     pet_path = os.path.join(images_root_path, json_path.replace("_clicks.json", "_0001.nii.gz"))
     print(os.path.join("/mnt/disk_2/Zach/Autopet_Heatmaps", json_path.replace("_clicks.json", "_0002.nii.gz")))
