@@ -26,7 +26,9 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
     ref_shape = ref.shape
     ref_affine = pet_nii.affine
     heatmap = np.zeros(ref_shape)
+    print(ref_shape)
     for t_click in tumor_clicks:
+        print(t_click)
         heatmap[t_click]=1
     for b_click in bg_clicks:
         heatmap[b_click]=-1
