@@ -1,5 +1,6 @@
 FROM pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
 
+RUN /bin/bash
 RUN groupadd -r algorithm && \
     useradd -m --no-log-init -r -g algorithm algorithm && \
     mkdir -p /opt/algorithm /input /output /output/images/tumor-lesion-segmentation  && \
