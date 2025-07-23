@@ -165,7 +165,9 @@ class Autopet_baseline:
         src_direction = properties["sitk_stuff"]["direction"]
         target_spacing = tuple(map(float, json.load(open(join(trained_model_path, "plans.json"), "r"))["configurations"][
                 "3d_fullres"]["spacing"]))
-        predictor.initialize_from_trained_model_folder(trained_model_path, use_folds=(0,1,2,3,4), checkpoint_name="checkpoint_final.pth")
+        # TODO use final.pth
+        predictor.initialize_from_trained_model_folder(trained_model_path, use_folds=(0,1,2,3,4), checkpoint_name="checkpoint_best.pth")
+
 
 
         """tracer = SmartTracerDiscriminator("dd_weights/weights", torch.device("cuda"))(SimpleITK.ReadImage(pet_mha))
