@@ -166,7 +166,7 @@ class Autopet_baseline:
         target_spacing = tuple(map(float, json.load(open(join(trained_model_path, "plans.json"), "r"))["configurations"][
                 "3d_fullres"]["spacing"]))
         # TODO use final.pth
-        predictor.initialize_from_trained_model_folder(trained_model_path, use_folds=(0,1,2,3,4), checkpoint_name="checkpoint_best.pth")
+        predictor.initialize_from_trained_model_folder(trained_model_path, use_folds=(0,), checkpoint_name="checkpoint_best.pth")
 
 
 
