@@ -105,9 +105,10 @@ class Autopet_baseline:
             with open(os.path.join(self.lesion_click_path, click_file), 'r') as f:
                 clicks = json.load(f)
             save_click_heatmaps(clicks, self.nii_path, 
-                                os.path.join(self.nii_path, "TCIA_001_0001.nii.gz"),
+                                os.path.join(self.nii_path, "TCIA_001_0002.nii.gz"),
                                 )
         print(os.listdir(self.nii_path))
+        
 
         return uuid
 
@@ -139,7 +140,9 @@ class Autopet_baseline:
         trained_model_path = "nnUNet_results/Dataset514_AUTOPETIV/nnUNetTrainer__nnUNetResEncUNetLPlans__3d_fullres"
 
         ct_mha = subfiles(join(self.input_path, 'images/ct/'), suffix='.mha')[0]
-        pet_mha = subfiles(join(self.input_path, 'images/pet/'), suffix='.mha')[0]
+        ct_nii = os.path.join(self.nii_path, "TCIA_001_0000.nii.gz")  # subfiles(join(self.input_path, 'images/ct/'), suffix='.mha')[0]
+        pet_nii = os.path.join(self.nii_path, "TCIA_001_0001.nii.gz")  # subfiles(join(self.input_path, 'images/pet/'), suffix='.mha')[0]
+        hm_nii = os.path.join(self.nii_path, "TCIA_001_0002.nii.gz")
         uuid = os.path.basename(os.path.splitext(ct_mha)[0])
         output_file_trunc = os.path.join(self.output_path + uuid)
 
@@ -154,11 +157,12 @@ class Autopet_baseline:
 
 
         print("Reading images", end="")
-        images, properties = SimpleITKIO().read_images([ct_mha, pet_mha])
+        images, properties = SimpleITKIO().read_images([ct_nii, pet_nii, hm_nii])
         print("Done")
 
         ct = images[0]
         pt = images[1]
+        hm = images[2]
 
         src_spacing = properties["sitk_stuff"]["spacing"]
         src_origin = properties["sitk_stuff"]["origin"]
@@ -193,7 +197,7 @@ class Autopet_baseline:
         predictor.dataset_json['file_ending'] = '.mha'
 
         print("Stacking..", end="")
-        images = np.stack([ct, pt])
+        images = np.stack([ct, pt, hm])
         print("Done")
 
         if nb_voxels < 3.5e7:
