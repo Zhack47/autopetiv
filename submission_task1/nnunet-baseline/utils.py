@@ -29,6 +29,7 @@ def generate_gaussian_heatmap(coords, shape, sigma=2.0):
 
 def get_coords(json_path):
     json_file = json.load(open(json_path, "rb"))
+    print(json_file)
     tumor_coords = []
     bg_coords = []
     points = json_file["points"]
