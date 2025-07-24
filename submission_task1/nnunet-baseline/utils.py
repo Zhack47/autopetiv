@@ -75,7 +75,7 @@ def save_click_heatmaps(click_file, output, input_pet):
                         tumor_clicks,
                         bg_clicks,
                         os.path.join(output,
-                                     f'{input_pet.split("/")[-1].split("_0001.nii.gz")[0]}_0003.nii.gz'))
+                                     f'{input_pet.split("/")[-1].split("_0001.nii.gz")[0]}_0002.nii.gz'))
     
     
     '''pet_img = nib.load(input_pet)
