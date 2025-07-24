@@ -7,6 +7,7 @@ import SimpleITK
 import torch
 import numpy as np
 
+
 from nnunetv2.imageio.simpleitk_reader_writer import SimpleITKIO
 from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
 from batchgenerators.utilities.file_and_folder_operations import maybe_mkdir_p, subfiles, join
@@ -104,9 +105,12 @@ class Autopet_baseline:
         if click_file:
             with open(os.path.join(self.lesion_click_path, click_file), 'r') as f:
                 clicks = json.load(f)
-            save_click_heatmaps(clicks, self.nii_path, 
-                                os.path.join(self.nii_path, "TCIA_001_0002.nii.gz"),
-                                )
+            #save_click_heatmaps(clicks, self.nii_path, 
+            #                    os.path.join(self.nii_path, "TCIA_001_0001.nii.gz"),
+            #                    )
+            save_click_heatmaps(os.path.join(self.lesion_click_path, click_file),
+                                 self.nii_path,
+                                os.path.join(self.nii_path, "TCIA_001_0001.nii.gz"))
         print(os.listdir(self.nii_path))
         
 
