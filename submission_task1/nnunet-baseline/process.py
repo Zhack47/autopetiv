@@ -244,7 +244,7 @@ class Autopet_baseline:
         print("Start prediction")
         self.predict()
         print("Start output writing")
-        self.write_outputs(uuid)
+        #self.write_outputs(uuid)
 
 
 if __name__ == "__main__":
