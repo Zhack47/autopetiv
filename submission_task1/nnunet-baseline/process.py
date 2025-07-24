@@ -1,12 +1,13 @@
-import json
 import os
+import time
+import json
 import shutil
 import subprocess
 from pathlib import Path
+
 import SimpleITK
 import torch
 import numpy as np
-
 
 from nnunetv2.imageio.simpleitk_reader_writer import SimpleITKIO
 from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
@@ -97,21 +98,14 @@ class Autopet_baseline:
             os.path.join(self.nii_path, "TCIA_001_0001.nii.gz"),
         )
         
+        print("Generating heatmaps...")
+        time_0_hm = time.time_ns()
         json_file = os.path.join(self.input_path, "lesion-clicks.json")
-        print(f"json_file: {json_file}")
-        #self.gc_to_swfastedit_format(json_file, os.path.join(self.lesion_click_path, "TCIA_001_clicks.json"))
-
-        #click_file = os.listdir(self.lesion_click_path)[0]
-        #if click_file:
-            #with open(os.path.join(self.lesion_click_path, click_file), 'r') as f:
-            #    clicks = json.load(f)
-            #save_click_heatmaps(clicks, self.nii_path, 
-            #                    os.path.join(self.nii_path, "TCIA_001_0001.nii.gz"),
-            #                    )
         save_click_heatmaps(json_file, self.nii_path,
                             os.path.join(self.nii_path, "TCIA_001_0001.nii.gz"))
         print(os.listdir(self.nii_path))
-        
+        time_1_hm = time.time_ns()
+        print(f"Heatmaps generated. Took {time_0_hm-time_1_hm}")
 
         return uuid
 
@@ -151,8 +145,8 @@ class Autopet_baseline:
 
         print("Creating", end="")
         predictor = nnUNetPredictor(
-            tile_step_size=0.5,
-            use_mirroring=True,
+            tile_step_size=0.8,
+            use_mirroring=False,
             verbose=False,
             verbose_preprocessing=False,
             allow_tqdm=True)
@@ -172,25 +166,10 @@ class Autopet_baseline:
         src_direction = properties["sitk_stuff"]["direction"]
         target_spacing = tuple(map(float, json.load(open(join(trained_model_path, "plans.json"), "r"))["configurations"][
                 "3d_fullres"]["spacing"]))
+        
         # TODO use final.pth
         predictor.initialize_from_trained_model_folder(trained_model_path, use_folds=(0,), checkpoint_name="checkpoint_best.pth")
 
-
-
-        """tracer = SmartTracerDiscriminator("dd_weights/weights", torch.device("cuda"))(SimpleITK.ReadImage(pet_mha))
-
-
-        print("[+] Initalizing model")
-        print(f"[+] Using model for {tracer}")
-        if tracer==Tracer.PSMA:
-            target_spacing = tuple(map(float, json.load(open(join(trained_model_path_psma, "plans.json"), "r"))["configurations"][
-                "3d_fullres"]["spacing"]))
-            predictor.initialize_from_trained_model_folder(trained_model_path_psma, use_folds=(0,1,2,3,4), checkpoint_name="checkpoint_best.pth")
-        elif tracer==Tracer.FDG:
-            target_spacing = tuple(map(float, json.load(open(join(trained_model_path_fdg, "plans.json"), "r"))["configurations"][
-                "3d_fullres"]["spacing"]))
-            predictor.initialize_from_trained_model_folder(trained_model_path_fdg, use_folds=(0,1,2,3,4), checkpoint_name="checkpoint_final.pth")
-        """
         fin_size = ct.shape
         new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(src_spacing, target_spacing[::-1], fin_size)])
         print(f"Resampled shape: {new_shape}")
