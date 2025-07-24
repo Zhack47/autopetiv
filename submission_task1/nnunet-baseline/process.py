@@ -105,7 +105,7 @@ class Autopet_baseline:
                             os.path.join(self.nii_path, "TCIA_001_0001.nii.gz"))
         print(os.listdir(self.nii_path))
         time_1_hm = time.time_ns()
-        print(f"Heatmaps generated. Took {time_0_hm-time_1_hm}")
+        print(f"Heatmaps generated. Took {(time_1_hm-time_0_hm)/1000000}ms")
 
         return uuid
 
