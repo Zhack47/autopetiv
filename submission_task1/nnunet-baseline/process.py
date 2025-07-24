@@ -145,8 +145,8 @@ class Autopet_baseline:
 
         print("Creating", end="")
         predictor = nnUNetPredictor(
-            tile_step_size=0.8,
-            use_mirroring=False,
+            tile_step_size=0.5,
+            use_mirroring=True,
             verbose=False,
             verbose_preprocessing=False,
             allow_tqdm=True)
