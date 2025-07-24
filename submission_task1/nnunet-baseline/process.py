@@ -101,15 +101,15 @@ class Autopet_baseline:
         print(f"json_file: {json_file}")
         #self.gc_to_swfastedit_format(json_file, os.path.join(self.lesion_click_path, "TCIA_001_clicks.json"))
 
-        click_file = os.listdir(self.lesion_click_path)[0]
-        if click_file:
+        #click_file = os.listdir(self.lesion_click_path)[0]
+        #if click_file:
             #with open(os.path.join(self.lesion_click_path, click_file), 'r') as f:
             #    clicks = json.load(f)
             #save_click_heatmaps(clicks, self.nii_path, 
             #                    os.path.join(self.nii_path, "TCIA_001_0001.nii.gz"),
             #                    )
-            save_click_heatmaps(json_file, self.nii_path,
-                                os.path.join(self.nii_path, "TCIA_001_0001.nii.gz"))
+        save_click_heatmaps(json_file, self.nii_path,
+                            os.path.join(self.nii_path, "TCIA_001_0001.nii.gz"))
         print(os.listdir(self.nii_path))
         
 
