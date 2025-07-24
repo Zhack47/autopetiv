@@ -172,10 +172,11 @@ class Autopet_baseline:
 
         fin_size = ct.shape
         new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(src_spacing, target_spacing[::-1], fin_size)])
-        print(f"Resampled shape: {new_shape}")
         nb_voxels = np.prod(pt.shape)
-
+        print(f"Resampled shape: {new_shape}")
+        print(nb_voxels)
         print("Done")
+
         predictor.dataset_json['file_ending'] = '.mha'
 
         print("Stacking..", end="")
