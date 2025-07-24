@@ -40,7 +40,7 @@ import os
 
 file = os.listdir('/output/images/tumor-lesion-segmentation')[0]
 output = sitk.GetArrayFromImage(sitk.ReadImage(os.path.join('/output/images/tumor-lesion-segmentation/', file)))
-expected_output = sitk.GetArrayFromImage(sitk.ReadImage('/expected_output/psma_95b833d46f153cd2_2018-04-16.nii.gz'))
+expected_output = sitk.GetArrayFromImage(sitk.ReadImage('/expected_output/psma_fedc5777fd9687d3_2019-04-29.nii.gz'))
 
 
 mse = sum(sum(sum((output - expected_output) ** 2)))
