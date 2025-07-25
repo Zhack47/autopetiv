@@ -46,10 +46,14 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
     max_pos = np.max(heatmap_pos)
     max_neg = np.max(heatmap_neg)
     
-    if max_pos:
+    if max_pos and max_neg:
         heatmap = heatmap_pos/max_pos - heatmap_neg/max_neg
-    else:  # There are no foreground points
-        heatmap = - heatmap_neg/max_neg
+    elif max_pos:  # There are no background points
+        heatmap = heatmap_pos/max_pos
+    elif max_neg:  # There are no foreground points
+        heatmap = heatmap_neg/max_neg
+    else:
+        heatmap = heatmap_pos
     out = nib.Nifti1Image(heatmap, affine=ref_affine)
     nib.save(out, output_path)
 
