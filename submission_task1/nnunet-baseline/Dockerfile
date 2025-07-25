@@ -27,6 +27,7 @@ RUN python -m pip install -e nnunetv2-2.6.2
 COPY --chown=algorithm:algorithm nnUNet_results /opt/algorithm/nnUNet_results
 COPY --chown=algorithm:algorithm process.py /opt/algorithm/
 COPY --chown=algorithm:algorithm utils.py /opt/algorithm/
+COPY --chown=algorithm:algorithm heatmaps.py /opt/algorithm/
 
 ENV nnUNet_raw="/opt/algorithm/nnUNet_raw"
 ENV nnUNet_preprocessed="/opt/algorithm/nnUNet_preprocessed"
