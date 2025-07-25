@@ -40,7 +40,7 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
     heatmap_pos[ref<=4] = 0
     
     # Set to zeros points that are in the positive gaussian map but not a background click
-    heatmap_neg[heatmap_pos!=0 & point_map_neg==0] = 0  
+    heatmap_neg[heatmap_pos!=0 and point_map_neg==0] = 0  
     
     # Normalizing between 0 and 1
     max_pos = np.max(heatmap_pos)
