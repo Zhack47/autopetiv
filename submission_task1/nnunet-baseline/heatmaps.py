@@ -53,6 +53,16 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
     out = nib.Nifti1Image(heatmap, affine=ref_affine)
     nib.save(out, output_path)
 
+
+def save_click_heatmaps(click_file, output, input_pet):
+    tumor_clicks, bg_clicks = get_coords(click_file)
+    save_heatmap(input_pet,
+                        tumor_clicks,
+                        bg_clicks,
+                        os.path.join(output,
+                                     f'{input_pet.split("/")[-1].split("_0001.nii.gz")[0]}_0002.nii.gz'))
+
+
 if __name__ == "__main__":
     json_root_path = "FDG_PSMA_PETCT_pre-simulated_clicks"
     images_root_path = "/mnt/disk_2/Zach/autopetIV/imagesTr"
