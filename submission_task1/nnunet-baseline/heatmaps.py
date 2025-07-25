@@ -27,12 +27,12 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
     ref = pet_nii.get_fdata()
     ref_shape = ref.shape
     ref_affine = pet_nii.affine
-    point_map_pos = np.zeros(ref_shape)
-    point_map_neg = np.zeros(ref_shape)
+    point_map_pos = np.zeros(ref_shape, dtype=np.float32)
+    point_map_neg = np.zeros(ref_shape, dtype=np.float32)
     for t_click in tumor_clicks:
-        point_map_pos[(t_click[0],t_click[1],t_click[2])]=1
+        point_map_pos[(t_click[0],t_click[1],t_click[2])]=1.
     for b_click in bg_clicks:
-        point_map_neg[(b_click[0],b_click[1],b_click[2])]=1
+        point_map_neg[(b_click[0],b_click[1],b_click[2])]=1.
     heatmap_pos =  gaussian_filter(point_map_pos, 3)
     heatmap_neg =  gaussian_filter(point_map_neg, 6)
     
@@ -40,7 +40,7 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
     heatmap_pos[ref<=4] = 0
     
     # Set to zeros points that are in the positive gaussian map but not a background click
-    heatmap_neg[heatmap_pos!=0 and point_map_neg==0] = 0  
+    heatmap_neg[heatmap_pos!=0 & point_map_neg==0] = 0  
     
     # Normalizing between 0 and 1
     max_pos = np.max(heatmap_pos)
