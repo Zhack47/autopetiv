@@ -21,8 +21,8 @@ RUN python -m pip install --user -U pip && \
     mkdir -p /opt/algorithm/nnUNet_raw_data_base/nnUNet_raw_data/Task001_TCIA/result
 
 
-COPY --chown=algorithm:algorithm nnunetv2-2.2.6 /opt/algorithm/nnunetv2-2.2.6
-RUN python -m pip install -e nnunetv2-2.2.6
+COPY --chown=algorithm:algorithm nnunetv2-2.6.2 /opt/algorithm/nnunetv2-2.2.6
+RUN python -m pip install -e nnunetv2-2.6.2
 
 COPY --chown=algorithm:algorithm nnUNet_results /opt/algorithm/nnUNet_results
 COPY --chown=algorithm:algorithm process.py /opt/algorithm/
