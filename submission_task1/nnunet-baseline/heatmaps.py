@@ -83,7 +83,7 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
 
 
 def save_click_heatmaps(click_file, output, input_pet):
-    if os.listdir(click_file)[0]:
+    if os.path.exists(click_file)[0]:
         tumor_clicks, bg_clicks = get_coords(click_file)
         save_heatmap(input_pet,
                             tumor_clicks,
