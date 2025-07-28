@@ -83,7 +83,7 @@ def save_click_heatmaps(click_file, output, input_pet):
 
 if __name__ == "__main__":
     json_root_path = "../../FDG_PSMA_PETCT_pre-simulated_clicks"
-    images_root_path = "/mnt/disk_2/Zach/autopetIV/imagesTr"
+    images_root_path = "/mnt/disk_2/Zach/Dataset514_AUTOPETIV/imagesTr"
     for json_path in tqdm(sorted(os.listdir(json_root_path))):
         tumor_clicks, bg_clicks = get_coords(os.path.join(json_root_path, json_path))
         pet_path = os.path.join(images_root_path, json_path.replace("_clicks.json", "_0001.nii.gz"))
