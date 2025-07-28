@@ -22,6 +22,16 @@ def get_coords(json_path):
     return tumor_coords, bg_coords
 
 
+def save_empty_heatmap(pet_path, output_path):
+    pet_nii = nib.load(pet_path)
+    ref = pet_nii.get_fdata()
+    ref_shape = ref.shape
+    ref_affine = pet_nii.affine
+    heatmap = np.zeros(ref_shape, dtype=np.float32)
+    out = nib.Nifti1Image(heatmap, affine=ref_affine)
+    nib.save(out, output_path)
+
+
 def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
     pet_nii = nib.load(pet_path)
     ref = pet_nii.get_fdata()
@@ -73,12 +83,16 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
 
 
 def save_click_heatmaps(click_file, output, input_pet):
-    tumor_clicks, bg_clicks = get_coords(click_file)
-    save_heatmap(input_pet,
-                        tumor_clicks,
-                        bg_clicks,
-                        os.path.join(output,
-                                     f'{input_pet.split("/")[-1].split("_0001.nii.gz")[0]}_0002.nii.gz'))
+    if os.listdir(click_file)[0]:
+        tumor_clicks, bg_clicks = get_coords(click_file)
+        save_heatmap(input_pet,
+                            tumor_clicks,
+                            bg_clicks,
+                            os.path.join(output,
+                                         f'{input_pet.split("/")[-1].split("_0001.nii.gz")[0]}_0002.nii.gz'))
+    else:
+        save_empty_heatmap(input_pet, os.path.join(output,
+                                         f'{input_pet.split("/")[-1].split("_0001.nii.gz")[0]}_0002.nii.gz'))
 
 
 if __name__ == "__main__":
