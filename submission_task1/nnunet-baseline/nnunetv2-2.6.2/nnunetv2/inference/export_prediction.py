@@ -30,7 +30,7 @@ def convert_predicted_logits_to_segmentation_with_correct_shape(predicted_logits
     print(predicted_logits.shape)
     lesion_predicted_logits = predicted_logits[:3]
     print(lesion_predicted_logits.sum(0))
-    lesion_predicted_logits[2] = predicted_logits[2:].max(0)
+    lesion_predicted_logits[2], _ = predicted_logits[2:].max(0)
     print(lesion_predicted_logits.sum(0))
     print(lesion_predicted_logits.shape)
     lesion_predicted_logits = configuration_manager.resampling_fn_probabilities(lesion_predicted_logits,
