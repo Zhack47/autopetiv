@@ -47,9 +47,7 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
         # Set to zero points where SUV is lower than 4 or than SUV click
         local_gauss[ref<min(4, suv_val_at_click)] = 0
         max_pos = np.max(local_gauss)
-        print(np.max(local_gauss))
         local_gauss/=max_pos
-        print(np.max(local_gauss))
         heatmap_pos +=local_gauss
         heatmap_pos[heatmap_pos>1]=1
     for b_click in bg_clicks:
@@ -64,8 +62,6 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
     # Normalizing between 0 and 1
     max_pos = np.max(heatmap_pos)
     max_neg = np.max(heatmap_neg)
-    print(max_neg)
-    print(max_pos)
     
     if max_pos and max_neg:
         heatmap = heatmap_pos/max_pos - heatmap_neg/max_neg
@@ -75,9 +71,6 @@ def save_heatmap(pet_path, tumor_clicks, bg_clicks, output_path):
         heatmap = heatmap_neg/max_neg
     else:
         heatmap = heatmap_pos/max_pos
-    print(np.max(heatmap))
-    print(np.argwhere(heatmap==np.max(heatmap)))
-    print(np.min(heatmap))
     out = nib.Nifti1Image(heatmap, affine=ref_affine)
     nib.save(out, output_path)
 
