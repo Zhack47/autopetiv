@@ -27,9 +27,9 @@ def convert_predicted_logits_to_segmentation_with_correct_shape(predicted_logits
         len(configuration_manager.spacing) == \
         len(properties_dict['shape_after_cropping_and_before_resampling']) else \
         [spacing_transposed[0], *configuration_manager.spacing]
-    print(predicted_logits)
+    print(predicted_logits.shape)
     lesion_predicted_logits = predicted_logits[:2]
-    print(predicted_logits)
+    print(lesion_predicted_logits.shape)
     lesion_predicted_logits = configuration_manager.resampling_fn_probabilities(lesion_predicted_logits,
                                             properties_dict['shape_after_cropping_and_before_resampling'],
                                             current_spacing,
