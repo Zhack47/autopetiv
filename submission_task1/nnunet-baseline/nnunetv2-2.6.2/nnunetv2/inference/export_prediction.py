@@ -29,6 +29,8 @@ def convert_predicted_logits_to_segmentation_with_correct_shape(predicted_logits
         [spacing_transposed[0], *configuration_manager.spacing]
     print(predicted_logits.shape)
     lesion_predicted_logits = torch.cat([predicted_logits[:2], predicted_logits[2:].max(0, keepdim=True)[0]], 0)
+    print(predicted_logits[2:].max(0, keepdim=True)[0])
+    print(predicted_logits[2:].max(0, keepdim=True)[1])
     print(lesion_predicted_logits.sum(0))
     print(lesion_predicted_logits.shape)
     lesion_predicted_logits = configuration_manager.resampling_fn_probabilities(lesion_predicted_logits,
