@@ -100,7 +100,7 @@ class nnUNetDatasetMultiTask(object):
                 # print('saving open seg file')
         else:
             seg = np.load(entry['data_file'])['seg']
-
+        print(seg.shape)
         '''
         if isfile(entry['data_file'][:-4] + "_seg_org.npy"):
             seg_prev = np.load(entry['data_file'][:-4] + "_seg_org.npy", 'r')
