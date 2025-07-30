@@ -71,7 +71,7 @@ from nnunetv2.training.data_augmentation.custom_transforms.custom_transforms imp
 
 class nnUNetTrainer_organs_FDG(nnUNetTrainer):
     """ Mostly a copy from https://github.com/MIC-DKFZ/autopet-3-submission/blob/master/nnunetv2/training/nnUNetTrainer/autoPET3_Trainer.py"""
-    os.environ["STEM"] = "autoPET"
+    # os.environ["STEM"] = "autoPET"
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, unpack_dataset: bool = True,
                  device: torch.device = torch.device('cuda')):
         super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
