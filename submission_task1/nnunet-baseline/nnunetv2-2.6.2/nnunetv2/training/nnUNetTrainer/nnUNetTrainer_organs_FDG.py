@@ -453,6 +453,7 @@ class nnUNetTrainer_organs_FDG(nnUNetTrainer):
 
             # we cannot use self.get_tr_and_val_datasets() here because we might be DDP and then we have to distribute
             # the validation keys across the workers.
+            print(self.configuration_manager.data_identifier)
             _, val_keys = self.do_split()
             if self.is_ddp:
                 last_barrier_at_idx = len(val_keys) // dist.get_world_size() - 1
