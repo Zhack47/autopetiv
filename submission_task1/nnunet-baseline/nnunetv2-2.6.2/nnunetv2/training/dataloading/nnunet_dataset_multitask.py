@@ -101,6 +101,7 @@ class nnUNetDatasetMultiTask(object):
         else:
             seg = np.load(entry['data_file'])['seg']
         print(seg.shape)
+        print(np.unique(seg))
         '''
         if isfile(entry['data_file'][:-4] + "_seg_org.npy"):
             seg_prev = np.load(entry['data_file'][:-4] + "_seg_org.npy", 'r')
