@@ -1,6 +1,7 @@
 import argparse
 import multiprocessing
 import shutil
+from multiprocessing import Pool
 from typing import Optional
 import SimpleITK as sitk
 from batchgenerators.utilities.file_and_folder_operations import *
