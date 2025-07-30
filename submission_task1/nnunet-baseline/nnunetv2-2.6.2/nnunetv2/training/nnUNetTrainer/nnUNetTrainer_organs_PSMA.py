@@ -69,7 +69,7 @@ from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 from nnunetv2.training.data_augmentation.custom_transforms.custom_transforms import Misalign2
 
 
-class autoPET3_Trainer(nnUNetTrainer):
+class nnUNetTrainer_organs_PSMA(nnUNetTrainer):
     """ Mostly a copy from https://github.com/MIC-DKFZ/autopet-3-submission/blob/master/nnunetv2/training/nnUNetTrainer/autoPET3_Trainer.py"""
     os.environ["STEM"] = "autoPET"
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, unpack_dataset: bool = True,
