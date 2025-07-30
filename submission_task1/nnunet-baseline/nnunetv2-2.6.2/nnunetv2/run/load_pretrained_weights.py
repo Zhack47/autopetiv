@@ -59,7 +59,7 @@ def load_pretrained_weights(network, fname, verbose=False):
                 f"compatible with your network."
             assert model_dict[key].shape == pretrained_dict[key].shape, \
                 f"The shape of the parameters of key {key} is not the same. Pretrained model: " \
-                f"{pretrained_dict[key].shape}; your network: {model_dict[key]}. The pretrained model " \
+                f"{pretrained_dict[key].shape}; your network: {model_dict[key].shape}. The pretrained model " \
                 f"does not seem to be compatible with your network."
 
 
