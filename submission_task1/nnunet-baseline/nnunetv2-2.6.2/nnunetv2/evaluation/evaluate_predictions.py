@@ -1,7 +1,8 @@
 import multiprocessing
 import os
 from copy import deepcopy
-from typing import Tuple, List, Union
+from multiprocessing import Pool
+from typing import Tuple, List, Union, Optional
 
 import numpy as np
 from batchgenerators.utilities.file_and_folder_operations import subfiles, join, save_json, load_json, \

@@ -1,12 +1,13 @@
+import os
+from copy import deepcopy
 from typing import Union, List
 
 import numpy as np
 import torch
-from acvl_utils.cropping_and_padding.bounding_boxes import insert_crop_into_image
-from batchgenerators.utilities.file_and_folder_operations import load_json, save_pickle
+from acvl_utils.cropping_and_padding.bounding_boxes import bounding_box_to_slice
+from batchgenerators.utilities.file_and_folder_operations import load_json, isfile, save_pickle
 
 from nnunetv2.configuration import default_num_processes
-from nnunetv2.training.dataloading.nnunet_dataset import nnUNetDatasetBlosc2
 from nnunetv2.utilities.label_handling.label_handling import LabelManager
 from nnunetv2.utilities.plans_handling.plans_handler import PlansManager, ConfigurationManager
 
@@ -27,35 +28,26 @@ def convert_predicted_logits_to_segmentation_with_correct_shape(predicted_logits
         len(configuration_manager.spacing) == \
         len(properties_dict['shape_after_cropping_and_before_resampling']) else \
         [spacing_transposed[0], *configuration_manager.spacing]
-    lesion_predicted_logits = torch.cat([predicted_logits[:2], predicted_logits[2:].max(0, keepdim=True)[0]], 0)
-    lesion_predicted_logits = configuration_manager.resampling_fn_probabilities(lesion_predicted_logits,
+    predicted_logits = configuration_manager.resampling_fn_probabilities(predicted_logits,
                                             properties_dict['shape_after_cropping_and_before_resampling'],
                                             current_spacing,
                                             [properties_dict['spacing'][i] for i in plans_manager.transpose_forward])
-    #predicted_logits = np.zeros_like(predicted_logits)
     # return value of resampling_fn_probabilities can be ndarray or Tensor but that does not matter because
     # apply_inference_nonlin will convert to torch
-    '''if not return_probabilities:
-        # this has a faster computation path becasue we can skip the softmax in regular (not region based) trainig
-        segmentation = label_manager.convert_logits_to_segmentation(predicted_logits)
-    else:
-        predicted_probabilities = label_manager.apply_inference_nonlin(predicted_logits)
-        segmentation = label_manager.convert_probabilities_to_segmentation(predicted_probabilities)
-    '''
-    segmentation = lesion_predicted_logits.argmax(0)
-    segmentation[segmentation==2]=0
+    predicted_probabilities = label_manager.apply_inference_nonlin(predicted_logits)
     del predicted_logits
-    del lesion_predicted_logits
+    segmentation = label_manager.convert_probabilities_to_segmentation(predicted_probabilities)
+
+    # segmentation may be torch.Tensor but we continue with numpy
+    if isinstance(segmentation, torch.Tensor):
+        segmentation = segmentation.cpu().numpy()
 
     # put segmentation in bbox (revert cropping)
     segmentation_reverted_cropping = np.zeros(properties_dict['shape_before_cropping'],
                                               dtype=np.uint8 if len(label_manager.foreground_labels) < 255 else np.uint16)
-    segmentation_reverted_cropping = insert_crop_into_image(segmentation_reverted_cropping, segmentation, properties_dict['bbox_used_for_cropping'])
+    slicer = bounding_box_to_slice(properties_dict['bbox_used_for_cropping'])
+    segmentation_reverted_cropping[slicer] = segmentation
     del segmentation
-
-    # segmentation may be torch.Tensor but we continue with numpy
-    if isinstance(segmentation_reverted_cropping, torch.Tensor):
-        segmentation_reverted_cropping = segmentation_reverted_cropping.cpu().numpy()
 
     # revert transpose
     segmentation_reverted_cropping = segmentation_reverted_cropping.transpose(plans_manager.transpose_backward)
@@ -81,8 +73,7 @@ def export_prediction_from_logits(predicted_array_or_file: Union[np.ndarray, tor
                                   configuration_manager: ConfigurationManager,
                                   plans_manager: PlansManager,
                                   dataset_json_dict_or_file: Union[dict, str], output_file_truncated: str,
-                                  save_probabilities: bool = False,
-                                  num_threads_torch: int = default_num_processes):
+                                  save_probabilities: bool = False):
     # if isinstance(predicted_array_or_file, str):
     #     tmp = deepcopy(predicted_array_or_file)
     #     if predicted_array_or_file.endswith('.npy'):
@@ -97,7 +88,7 @@ def export_prediction_from_logits(predicted_array_or_file: Union[np.ndarray, tor
     label_manager = plans_manager.get_label_manager(dataset_json_dict_or_file)
     ret = convert_predicted_logits_to_segmentation_with_correct_shape(
         predicted_array_or_file, plans_manager, configuration_manager, label_manager, properties_dict,
-        return_probabilities=save_probabilities, num_threads_torch=num_threads_torch
+        return_probabilities=save_probabilities
     )
     del predicted_array_or_file
 
@@ -118,10 +109,15 @@ def export_prediction_from_logits(predicted_array_or_file: Union[np.ndarray, tor
 
 def resample_and_save(predicted: Union[torch.Tensor, np.ndarray], target_shape: List[int], output_file: str,
                       plans_manager: PlansManager, configuration_manager: ConfigurationManager, properties_dict: dict,
-                      dataset_json_dict_or_file: Union[dict, str], num_threads_torch: int = default_num_processes,
-                      dataset_class=None) \
+                      dataset_json_dict_or_file: Union[dict, str], num_threads_torch: int = default_num_processes) \
         -> None:
-
+    # # needed for cascade
+    # if isinstance(predicted, str):
+    #     assert isfile(predicted), "If isinstance(segmentation_softmax, str) then " \
+    #                               "isfile(segmentation_softmax) must be True"
+    #     del_file = deepcopy(predicted)
+    #     predicted = np.load(predicted)
+    #     os.remove(del_file)
     old_threads = torch.get_num_threads()
     torch.set_num_threads(num_threads_torch)
 
@@ -147,9 +143,5 @@ def resample_and_save(predicted: Union[torch.Tensor, np.ndarray], target_shape: 
     # segmentation may be torch.Tensor but we continue with numpy
     if isinstance(segmentation, torch.Tensor):
         segmentation = segmentation.cpu().numpy()
-
-    if dataset_class is None:
-        nnUNetDatasetBlosc2.save_seg(segmentation.astype(dtype=np.uint8 if len(label_manager.foreground_labels) < 255 else np.uint16), output_file)
-    else:
-        dataset_class.save_seg(segmentation.astype(dtype=np.uint8 if len(label_manager.foreground_labels) < 255 else np.uint16), output_file)
+    np.savez_compressed(output_file, seg=segmentation.astype(np.uint8))
     torch.set_num_threads(old_threads)

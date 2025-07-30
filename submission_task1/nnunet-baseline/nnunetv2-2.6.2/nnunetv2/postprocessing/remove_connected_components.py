@@ -1,6 +1,7 @@
 import argparse
 import multiprocessing
 import shutil
+from multiprocessing import Pool
 from typing import Union, Tuple, List, Callable
 
 import numpy as np
