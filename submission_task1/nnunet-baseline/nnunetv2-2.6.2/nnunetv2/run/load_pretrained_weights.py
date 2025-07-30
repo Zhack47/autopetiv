@@ -50,7 +50,8 @@ def load_pretrained_weights(network, fname, verbose=False):
             #     pretrained_dict[key] = pretrained_dict[key].repeat(1, 2, 1, 1, 1) if len(pretrained_dict[key].shape) == 5 else pretrained_dict[key]
             skip_strings_in_pretrained = [
             '.seg_layers.',
-            '.stem'
+            '.stem',
+            '.organ_seg_layers'
             ]
         print(os.environ.get("STEM"))
         print(skip_strings_in_pretrained)
