@@ -52,6 +52,7 @@ def load_pretrained_weights(network, fname, verbose=False):
             '.seg_layers.',
             '.stem'
             ]
+        print(os.environ.get("STEM"))
         print(skip_strings_in_pretrained)
         if all([i not in key for i in skip_strings_in_pretrained]):
             assert key in pretrained_dict, \
