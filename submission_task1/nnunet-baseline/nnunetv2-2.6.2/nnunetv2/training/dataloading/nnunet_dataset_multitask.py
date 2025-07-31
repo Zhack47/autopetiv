@@ -104,7 +104,7 @@ class nnUNetDatasetMultiTask(object):
         seg_prev = copy.deepcopy(seg)
         seg_main = copy.deepcopy(seg)
         seg_main[seg_main!=1] = 0
-        seg_prev[seg_main] = 0
+        seg_prev[seg_main==1] = 0
         '''
         if isfile(entry['data_file'][:-4] + "_seg_org.npy"):
             seg_prev = np.load(entry['data_file'][:-4] + "_seg_org.npy", 'r')
