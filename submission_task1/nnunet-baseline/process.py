@@ -168,7 +168,7 @@ class Autopet_baseline:
         src_direction = properties["sitk_stuff"]["direction"]
         
         
-        tracer = SmartTracerDiscriminator("dd_weights/weights", torch.device("cuda"))(pet_nii)
+        tracer = SmartTracerDiscriminator("dd_weights/weights", torch.device("cuda"))(pt)
         print(f"Found tracer: {tracer}")
         # TODO use final.pth
         if tracer == Tracer.PSMA:
