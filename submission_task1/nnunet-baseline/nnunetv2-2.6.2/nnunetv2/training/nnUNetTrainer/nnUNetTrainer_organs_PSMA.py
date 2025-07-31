@@ -288,7 +288,7 @@ class nnUNetTrainer_organs_PSMA(nnUNetTrainer):
                                    enable_deep_supervision: bool = True) -> nn.Module:
 
         architecture_class_name = "nnunetv2.architecture.ResidualEncoderUNetOrgan.ResidualEncoderUNetOrgan"
-
+        num_output_channels = 2
         return nnUNetTrainer.build_network_architecture(architecture_class_name,
                                                         arch_init_kwargs,
                                                         arch_init_kwargs_req_import,
