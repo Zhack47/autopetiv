@@ -37,13 +37,14 @@ docker run --rm -it \
         autopet_eval python3 -c """
 import SimpleITK as sitk
 import os
+import numpy as np
 
 file = os.listdir('/output/images/tumor-lesion-segmentation')[0]
 output = sitk.GetArrayFromImage(sitk.ReadImage(os.path.join('/output/images/tumor-lesion-segmentation/', file)))
 expected_output = sitk.GetArrayFromImage(sitk.ReadImage('/expected_output/psma_fedc5777fd9687d3_2019-04-29.nii.gz'))
 
-tp = sum(output*expected_output)
-den = sum(output+expected_output) - tp
+tp = np.sum(output*expected_output)
+den = np.sum(output+expected_output) - tp
 print(tp, den)
 print(f'IoU = {tp/den}')
 mse = sum(sum(sum((output - expected_output) ** 2)))
