@@ -13,7 +13,7 @@ from torch.nn.modules.conv import _ConvNd
 from torch.nn.modules.dropout import _DropoutNd
 import numpy as np
 
-NUM_ORGANS = 10 + 1 # 10 organs + 1 background
+NUM_ORGANS = 14 + 1 # 14 organs + 1 background
 
 class ResidualEncoderUNetOrgan(nn.Module):
     def __init__(self,
