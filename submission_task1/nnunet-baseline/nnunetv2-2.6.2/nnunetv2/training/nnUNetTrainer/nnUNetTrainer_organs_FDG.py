@@ -78,6 +78,7 @@ class nnUNetTrainer_organs_FDG(nnUNetTrainer):
         self.num_epochs = 1500
         self.initial_lr = 1e-3
         self.num_iterations_per_epoch = 350  # 350*bs (=3) = 1050 ~ Roughly the number of FDG samples
+        # In theory, in reality our GPU was too small and bs =2
 
     @staticmethod
     def get_training_transforms(

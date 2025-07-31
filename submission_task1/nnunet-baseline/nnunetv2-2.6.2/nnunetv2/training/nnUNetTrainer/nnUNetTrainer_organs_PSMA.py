@@ -78,6 +78,7 @@ class nnUNetTrainer_organs_PSMA(nnUNetTrainer):
         self.num_epochs = 1500
         self.initial_lr = 1e-3
         self.num_iterations_per_epoch = 250  # 250*bs (=3) = 750 ~ Roughly the number of FDG samples (I also preferred using the default value over200 epochs which would be 600 samples per epoch, sue me)
+        # In theory, in reality our GPU was too small and bs =2
 
     @staticmethod
     def get_training_transforms(
