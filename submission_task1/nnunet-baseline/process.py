@@ -168,7 +168,7 @@ class Autopet_baseline:
         src_direction = properties["sitk_stuff"]["direction"]
         
         
-        tracer = SmartTracerDiscriminator("dd_weights/weights", torch.device("cuda"))(pt)
+        tracer = SmartTracerDiscriminator("dd_weights/weights", torch.device("cuda"))(SimpleITK.ReadImage(pet_nii))
         print(f"Found tracer: {tracer}")
         # TODO use final.pth
         if tracer == Tracer.PSMA:
