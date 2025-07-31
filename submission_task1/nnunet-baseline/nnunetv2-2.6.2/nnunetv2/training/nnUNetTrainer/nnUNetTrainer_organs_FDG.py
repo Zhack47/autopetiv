@@ -340,6 +340,12 @@ class nnUNetTrainer_organs_FDG(nnUNetTrainer):
         with autocast(self.device.type, enabled=True) if self.device.type == 'cuda' else dummy_context():
             output, organ_output = self.network(data, organ=True)
             # del data
+            print(output.shape)
+            print(organ_output.shape)
+            print("___________________")
+            print(torch.unique(target))
+            print(torch.unique(target_organs))
+            print("______________________________________")
             l = self.loss(output, target)
             l += self.loss(organ_output, target_organs)
 
