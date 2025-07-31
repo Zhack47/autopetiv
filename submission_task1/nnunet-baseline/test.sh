@@ -45,7 +45,7 @@ expected_output = sitk.GetArrayFromImage(sitk.ReadImage('/expected_output/psma_f
 tp = sum(output*expected_output)
 den = sum(output+expected_output) - tp
 print(tp, den)
-print(f"IoU = {tp/den}")
+print(f'IoU = {tp/den}')
 mse = sum(sum(sum((output - expected_output) ** 2)))
 if mse < 10:
     print('Test passed!')
