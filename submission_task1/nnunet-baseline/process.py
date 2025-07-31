@@ -14,6 +14,7 @@ from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
 from batchgenerators.utilities.file_and_folder_operations import maybe_mkdir_p, subfiles, join
 
 from heatmaps import save_click_heatmaps
+from smart_tracer_discriminator import SmartTracerDiscriminator, Tracer
 
 
 class Autopet_baseline:
@@ -132,7 +133,7 @@ class Autopet_baseline:
 
         maybe_mkdir_p(self.output_path)
 
-        #trained_model_path_psma = "nnUNet_results/Dataset514_AUTOPETIII_SW_PSMA/nnUNetTrainer__nnUNetPlans__3d_fullres"
+        trained_model_path_psma = "nnUNet_results/Dataset516_AUTOPETIVPSMA/nnUNetTrainer_organs_PSMA__nnUNetResEncUNetLPlans__3d_fullres"
         trained_model_path_fdg = "nnUNet_results/Dataset515_AUTOPETIVFDG/nnUNetTrainer_organs_FDG__nnUNetResEncUNetLPlans__3d_fullres"
         #trained_model_path = "nnUNet_results/Dataset514_AUTOPETIV/nnUNetTrainer__nnUNetResEncUNetLPlans__3d_fullres"
 
@@ -142,6 +143,7 @@ class Autopet_baseline:
         hm_nii = os.path.join(self.nii_path, "TCIA_001_0002.nii.gz")
         uuid = os.path.basename(os.path.splitext(ct_mha)[0])
         output_file_trunc = os.path.join(self.output_path + uuid)
+
 
         print("Creating", end="")
         predictor = nnUNetPredictor(
@@ -164,12 +166,19 @@ class Autopet_baseline:
         src_spacing = properties["sitk_stuff"]["spacing"]
         src_origin = properties["sitk_stuff"]["origin"]
         src_direction = properties["sitk_stuff"]["direction"]
-        target_spacing = tuple(map(float, json.load(open(join(trained_model_path_fdg, "plans.json"), "r"))["configurations"][
-                "3d_fullres"]["spacing"]))
         
+        
+        tracer = SmartTracerDiscriminator("dd_weights/weights", torch.device("cuda"))(pet_nii)
+        print(f"Found tracer: {tracer}")
         # TODO use final.pth
-        predictor.initialize_from_trained_model_folder(trained_model_path_fdg, use_folds=(0,), checkpoint_name="checkpoint_best.pth")
-
+        if tracer == Tracer.PSMA:
+            predictor.initialize_from_trained_model_folder(trained_model_path_psma, use_folds=(0,), checkpoint_name="checkpoint_best.pth")
+            target_spacing = tuple(map(float, json.load(open(join(trained_model_path_psma, "plans.json"), "r"))["configurations"][
+                    "3d_fullres"]["spacing"]))
+        elif tracer == Tracer.FDG:
+            predictor.initialize_from_trained_model_folder(trained_model_path_fdg, use_folds=(0,), checkpoint_name="checkpoint_best.pth")
+            target_spacing = tuple(map(float, json.load(open(join(trained_model_path_fdg, "plans.json"), "r"))["configurations"][
+                    "3d_fullres"]["spacing"]))
         fin_size = ct.shape
         new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(src_spacing, target_spacing[::-1], fin_size)])
         nb_voxels = np.prod(pt.shape)
