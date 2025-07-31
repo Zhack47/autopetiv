@@ -133,7 +133,7 @@ class Autopet_baseline:
         maybe_mkdir_p(self.output_path)
 
         #trained_model_path_psma = "nnUNet_results/Dataset514_AUTOPETIII_SW_PSMA/nnUNetTrainer__nnUNetPlans__3d_fullres"
-        trained_model_path_fdg = "nnUNet_results/Dataset515_AUTOPETIV/nnUNetTrainer_organs_FDG__nnUNetResEncUNetLPlans__3d_fullres"
+        trained_model_path_fdg = "nnUNet_results/Dataset515_AUTOPETIVFDG/nnUNetTrainer_organs_FDG__nnUNetResEncUNetLPlans__3d_fullres"
         #trained_model_path = "nnUNet_results/Dataset514_AUTOPETIV/nnUNetTrainer__nnUNetResEncUNetLPlans__3d_fullres"
 
         ct_mha = subfiles(join(self.input_path, 'images/ct/'), suffix='.mha')[0]
