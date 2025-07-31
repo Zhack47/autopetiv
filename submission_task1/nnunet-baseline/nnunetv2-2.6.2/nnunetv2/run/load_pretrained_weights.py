@@ -53,8 +53,6 @@ def load_pretrained_weights(network, fname, verbose=False):
             '.stem',
             '.organ_seg_layers'
             ]
-        print(os.environ.get("STEM"))
-        print(skip_strings_in_pretrained)
         if all([i not in key for i in skip_strings_in_pretrained]):
             assert key in pretrained_dict, \
                 f"Key {key} is missing in the pretrained model weights. The pretrained weights do not seem to be " \

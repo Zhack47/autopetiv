@@ -288,6 +288,7 @@ class nnUNetTrainer_organs_FDG(nnUNetTrainer):
 
         architecture_class_name = "nnunetv2.architecture.ResidualEncoderUNetOrgan.ResidualEncoderUNetOrgan"
         num_output_channels = 2
+        #architecture_class_name = "dynamic_network_architectures.architectures.unet.ResidualEncoderUNet"
         return nnUNetTrainer.build_network_architecture(architecture_class_name,
                                                         arch_init_kwargs,
                                                         arch_init_kwargs_req_import,
