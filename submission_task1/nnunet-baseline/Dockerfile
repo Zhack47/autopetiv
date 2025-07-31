@@ -25,6 +25,9 @@ COPY --chown=algorithm:algorithm nnunetv2-2.6.2 /opt/algorithm/nnunetv2-2.6.2
 RUN python -m pip install -e nnunetv2-2.6.2
 
 COPY --chown=algorithm:algorithm nnUNet_results /opt/algorithm/nnUNet_results
+COPY --chown=algorithm:algorithm dd_weights /opt/algorithm/dd_weights
+COPY --chown=algorithm:algorithm deep_discriminator.py /opt/algorithm/
+COPY --chown=algorithm:algorithm smart_tracer_discriminator.py /opt/algorithm/
 COPY --chown=algorithm:algorithm process.py /opt/algorithm/
 COPY --chown=algorithm:algorithm utils.py /opt/algorithm/
 COPY --chown=algorithm:algorithm heatmaps.py /opt/algorithm/
