@@ -169,7 +169,6 @@ class Autopet_baseline:
         
         # TODO use final.pth
         predictor.initialize_from_trained_model_folder(trained_model_path_fdg, use_folds=(0,), checkpoint_name="checkpoint_best.pth")
-        predictor.label_manager.num_segmentation_heads=2
 
         fin_size = ct.shape
         new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(src_spacing, target_spacing[::-1], fin_size)])
