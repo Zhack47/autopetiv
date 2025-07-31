@@ -102,8 +102,9 @@ class nnUNetDatasetMultiTask(object):
         else:
             seg = np.load(entry['data_file'])['seg']
         seg_prev = copy.deepcopy(seg)
-        seg[seg!=1] = 0
-        seg_prev[seg] = 0
+        seg_main = copy.deepcopy(seg)
+        seg_main[seg_main!=1] = 0
+        seg_prev[seg_main] = 0
         '''
         if isfile(entry['data_file'][:-4] + "_seg_org.npy"):
             seg_prev = np.load(entry['data_file'][:-4] + "_seg_org.npy", 'r')
@@ -111,7 +112,7 @@ class nnUNetDatasetMultiTask(object):
             raise ValueError(f"Could not find the organ segmentation {entry['data_file'][:-4] + '_seg_org.npy'}. Please preprocess and unpack the organ "
                              "segmentations and place them in the same folder as the data files with the ending '[name]_seg_org.npy'. Double check if your plans file points to the correct dataset and preprocessed folder.")
         '''
-        seg = np.vstack((seg, seg_prev)) # [None] removed
+        seg = np.vstack((seg_main, seg_prev)) # [None] removed
         
         return data, seg, entry['properties']
 
