@@ -133,8 +133,8 @@ class Autopet_baseline:
         maybe_mkdir_p(self.output_path)
 
         #trained_model_path_psma = "nnUNet_results/Dataset514_AUTOPETIII_SW_PSMA/nnUNetTrainer__nnUNetPlans__3d_fullres"
-        #trained_model_path_fdg = "nnUNet_results/Dataset513_AUTOPETIII_SW_FDG/nnUNetTrainer__nnUNetPlans__3d_fullres_isotropic"
-        trained_model_path = "nnUNet_results/Dataset514_AUTOPETIV/nnUNetTrainer__nnUNetResEncUNetLPlans__3d_fullres"
+        trained_model_path_fdg = "nnUNet_results/Dataset515_AUTOPETIV/nnUNetTrainer_organs_FDG__nnUNetResEncUNetLPlans__3d_fullres"
+        #trained_model_path = "nnUNet_results/Dataset514_AUTOPETIV/nnUNetTrainer__nnUNetResEncUNetLPlans__3d_fullres"
 
         ct_mha = subfiles(join(self.input_path, 'images/ct/'), suffix='.mha')[0]
         ct_nii = os.path.join(self.nii_path, "TCIA_001_0000.nii.gz")  # subfiles(join(self.input_path, 'images/ct/'), suffix='.mha')[0]
@@ -145,8 +145,8 @@ class Autopet_baseline:
 
         print("Creating", end="")
         predictor = nnUNetPredictor(
-            tile_step_size=0.6,
-            use_mirroring=True,
+            tile_step_size=0.8,
+            use_mirroring=False,
             verbose=False,
             verbose_preprocessing=False,
             allow_tqdm=True)
@@ -168,7 +168,7 @@ class Autopet_baseline:
                 "3d_fullres"]["spacing"]))
         
         # TODO use final.pth
-        predictor.initialize_from_trained_model_folder(trained_model_path, use_folds=(0,), checkpoint_name="checkpoint_best.pth")
+        predictor.initialize_from_trained_model_folder(trained_model_path_fdg, use_folds=(0,), checkpoint_name="checkpoint_best.pth")
 
         fin_size = ct.shape
         new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(src_spacing, target_spacing[::-1], fin_size)])
@@ -198,6 +198,8 @@ class Autopet_baseline:
 
         out_image = SimpleITK.ReadImage(output_file_trunc+".mha")
         out_np = SimpleITK.GetArrayFromImage(out_image)
+        print(out_np.shape)
+        print(np.unique(out_np))
 
         # Keeping only the 'lesion' class
         oneclass_np = np.zeros_like(pt)
