@@ -164,6 +164,7 @@ class Autopet_baseline:
         src_spacing = properties["sitk_stuff"]["spacing"]
         src_origin = properties["sitk_stuff"]["origin"]
         src_direction = properties["sitk_stuff"]["direction"]
+        os.system("/bin/sh")
         target_spacing = tuple(map(float, json.load(open(join(trained_model_path_fdg, "plans.json"), "r"))["configurations"][
                 "3d_fullres"]["spacing"]))
         
