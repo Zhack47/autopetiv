@@ -147,7 +147,7 @@ class Autopet_baseline:
 
         print("Creating", end="")
         predictor = nnUNetPredictor(
-            tile_step_size=0.8,
+            tile_step_size=0.6,
             use_mirroring=True,
             verbose=False,
             verbose_preprocessing=False,
@@ -185,7 +185,7 @@ class Autopet_baseline:
         print(f"Resampled shape: {new_shape}")
         print(nb_voxels)
         print("Done")
-
+        predictor.configuration_manager.patch_size = (128,128,128)
         predictor.dataset_json['file_ending'] = '.mha'
 
         print("Stacking..", end="")
