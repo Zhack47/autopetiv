@@ -172,11 +172,11 @@ class Autopet_baseline:
         print(f"Found tracer: {tracer}")
         # TODO use final.pth
         if tracer == Tracer.PSMA:
-            predictor.initialize_from_trained_model_folder(trained_model_path_psma, use_folds=(0,), checkpoint_name="checkpoint_best.pth")
+            predictor.initialize_from_trained_model_folder(trained_model_path_psma, use_folds=(0,4), checkpoint_name="checkpoint_best.pth")
             target_spacing = tuple(map(float, json.load(open(join(trained_model_path_psma, "plans.json"), "r"))["configurations"][
                     "3d_fullres"]["spacing"]))
         elif tracer == Tracer.FDG:
-            predictor.initialize_from_trained_model_folder(trained_model_path_fdg, use_folds=(0,), checkpoint_name="checkpoint_best.pth")
+            predictor.initialize_from_trained_model_folder(trained_model_path_fdg, use_folds=(0,4), checkpoint_name="checkpoint_best.pth")
             target_spacing = tuple(map(float, json.load(open(join(trained_model_path_fdg, "plans.json"), "r"))["configurations"][
                     "3d_fullres"]["spacing"]))
         fin_size = ct.shape
@@ -185,7 +185,7 @@ class Autopet_baseline:
         print(f"Resampled shape: {new_shape}")
         print(nb_voxels)
         print("Done")
-        predictor.configuration_manager.patch_size = (128,128,128)
+        #predictor.configuration_manager.patch_size = (128,128,128)
         predictor.dataset_json['file_ending'] = '.mha'
 
         print("Stacking..", end="")
