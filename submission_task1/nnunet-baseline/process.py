@@ -15,6 +15,7 @@ from batchgenerators.utilities.file_and_folder_operations import maybe_mkdir_p, 
 
 from heatmaps import save_click_heatmaps
 from smart_tracer_discriminator import SmartTracerDiscriminator, Tracer
+from post_process import remove_small_lowval_components_numpy
 
 
 class Autopet_baseline:
@@ -216,10 +217,16 @@ class Autopet_baseline:
         print(out_np.shape)
         print(np.unique(out_np))
 
+        '''Not needd woth two-headed model
         # Keeping only the 'lesion' class
         oneclass_np = np.zeros_like(pt)
         oneclass_np[out_np==1]=1
-        oneclass_image = SimpleITK.GetImageFromArray(oneclass_np.astype(np.uint8))
+        '''
+
+        out_np = remove_small_lowval_components_numpy(out_np, pt)
+
+
+        oneclass_image = SimpleITK.GetImageFromArray(out_np.astype(np.uint8))
         oneclass_image.SetOrigin(src_origin)
         oneclass_image.SetSpacing(src_spacing)
         oneclass_image.SetDirection(src_direction)
