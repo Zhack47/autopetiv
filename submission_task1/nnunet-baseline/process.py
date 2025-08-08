@@ -216,7 +216,7 @@ class Autopet_baseline:
         out_np = SimpleITK.GetArrayFromImage(out_image)
         print(out_np.shape)
         print(np.unique(out_np))
-
+        print(np.sum(out_np))
         '''Not needd woth two-headed model
         # Keeping only the 'lesion' class
         oneclass_np = np.zeros_like(pt)
@@ -224,6 +224,7 @@ class Autopet_baseline:
         '''
 
         out_np = remove_small_lowval_components_numpy(out_np, pt)
+        print(np.sum(out_np))
 
 
         oneclass_image = SimpleITK.GetImageFromArray(out_np.astype(np.uint8))
