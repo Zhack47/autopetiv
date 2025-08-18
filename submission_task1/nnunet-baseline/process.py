@@ -174,16 +174,16 @@ class Autopet_baseline:
         # TODO use final.pth
         if tracer == Tracer.PSMA:
             try:
-                predictor.initialize_from_trained_model_folder(trained_model_path_psma, use_folds=(0,1,4), checkpoint_name="checkpoint_final.pth")
+                predictor.initialize_from_trained_model_folder(trained_model_path_psma, use_folds=(0,1,2,3,4), checkpoint_name="checkpoint_final.pth")
             except:
-                predictor.initialize_from_trained_model_folder(trained_model_path_psma, use_folds=(0,1,4), checkpoint_name="checkpoint_latest.pth")
+                predictor.initialize_from_trained_model_folder(trained_model_path_psma, use_folds=(0,1,2,3,4), checkpoint_name="checkpoint_latest.pth")
             target_spacing = tuple(map(float, json.load(open(join(trained_model_path_psma, "plans.json"), "r"))["configurations"][
                     "3d_fullres"]["spacing"]))
         elif tracer == Tracer.FDG:
             try:
-                predictor.initialize_from_trained_model_folder(trained_model_path_fdg, use_folds=(0,3,4), checkpoint_name="checkpoint_final.pth")
+                predictor.initialize_from_trained_model_folder(trained_model_path_fdg, use_folds=(0,1,2,3,4), checkpoint_name="checkpoint_final.pth")
             except:
-                predictor.initialize_from_trained_model_folder(trained_model_path_fdg, use_folds=(0,3,4), checkpoint_name="checkpoint_latest.pth")
+                predictor.initialize_from_trained_model_folder(trained_model_path_fdg, use_folds=(0,1,2,3,4), checkpoint_name="checkpoint_latest.pth")
             target_spacing = tuple(map(float, json.load(open(join(trained_model_path_fdg, "plans.json"), "r"))["configurations"][
                     "3d_fullres"]["spacing"]))
         fin_size = ct.shape
