@@ -199,9 +199,9 @@ class Autopet_baseline:
         images = np.stack([ct, pt, hm])
         print("Done")
 
-        if nb_voxels < 3.5e7:
+        if nb_voxels < 1.8e7:
             predictor.predict_single_npy_array(images, properties, None, output_file_trunc, False)
-        elif nb_voxels < 6.9e7:
+        elif nb_voxels < 3.9e7:
             print("Removing one axis for prediction mirroring")
             predictor.allowed_mirroring_axes = (1, 2)
             predictor.predict_single_npy_array(images, properties, None, output_file_trunc, False)
@@ -223,7 +223,9 @@ class Autopet_baseline:
         oneclass_np[out_np==1]=1
         '''
 
+        time_0_slsr= time.time_ns()
         out_np = remove_small_lowval_components_numpy(out_np, pt)
+        print(f"Post-processing took {(time.time_ns() - time_0_slsr)/1000000}ms")
         print(np.sum(out_np))
 
 
