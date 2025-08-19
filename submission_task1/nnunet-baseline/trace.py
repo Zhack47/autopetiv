@@ -210,7 +210,7 @@ class Autopet_baseline:
                     predictor.allowed_mirroring_axes = None
                     print(nb_voxels, (time.time_ns()-time_0)/1000000000)
 
-                    out.append(nb_voxels, (time.time_ns()-time_0)/1000000000)
+                    out.append((nb_voxels, (time.time_ns()-time_0)/1000000000))
 
         out_image = SimpleITK.ReadImage(output_file_trunc+".mha")
         out_np = SimpleITK.GetArrayFromImage(out_image)
