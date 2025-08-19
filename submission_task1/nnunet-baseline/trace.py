@@ -191,9 +191,9 @@ class Autopet_baseline:
             for j in [100, 200, 300, 400, 500, 600]:
                 for k in [100, 200, 300, 400, 500, 600]:
                     new_shape = (i,j,k)
-                    images[0] = np.random.rand(*new_shape)
-                    images[1] = np.random.rand(*new_shape)
-                    images[2] = np.random.rand(*new_shape)
+                    ct = np.random.rand(*new_shape)
+                    pt = np.random.rand(*new_shape)
+                    hm = np.random.rand(*new_shape)
                     nb_voxels = np.prod(pt.shape)
                     print(f"Resampled shape: {new_shape}")
                     print(nb_voxels)
