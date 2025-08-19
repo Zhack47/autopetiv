@@ -29,6 +29,7 @@ COPY --chown=algorithm:algorithm dd_weights /opt/algorithm/dd_weights
 COPY --chown=algorithm:algorithm deep_discriminator.py /opt/algorithm/
 COPY --chown=algorithm:algorithm smart_tracer_discriminator.py /opt/algorithm/
 COPY --chown=algorithm:algorithm process.py /opt/algorithm/
+COPY --chown=algorithm:algorithm trace.py /opt/algorithm/
 COPY --chown=algorithm:algorithm utils.py /opt/algorithm/
 COPY --chown=algorithm:algorithm heatmaps.py /opt/algorithm/
 COPY --chown=algorithm:algorithm post_process.py /opt/algorithm/
@@ -37,4 +38,4 @@ ENV nnUNet_raw="/opt/algorithm/nnUNet_raw"
 ENV nnUNet_preprocessed="/opt/algorithm/nnUNet_preprocessed"
 ENV nnUNet_results="/opt/algorithm/nnUNet_results"
 
-ENTRYPOINT ["python", "-m", "process"]
+ENTRYPOINT ["python", "-m", "trace"]
