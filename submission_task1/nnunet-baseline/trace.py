@@ -191,9 +191,9 @@ class Autopet_baseline:
             for j in [100, 200, 300, 400, 500, 600]:
                 for k in [100, 200, 300, 400, 500, 600]:
                     new_shape = (i,j,k)
-                    images[0] = np.random.randn(new_shape)
-                    images[1] = np.random.randn(new_shape)
-                    images[2] = np.random.randn(new_shape)
+                    images[0] = np.random.rand(*new_shape)
+                    images[1] = np.random.rand(*new_shape)
+                    images[2] = np.random.rand(*new_shape)
                     nb_voxels = np.prod(pt.shape)
                     print(f"Resampled shape: {new_shape}")
                     print(nb_voxels)
@@ -204,7 +204,7 @@ class Autopet_baseline:
                     print("Stacking..", end="")
                     images = np.stack([ct, pt, hm])
                     print("Done")
-
+                    time_0 = time.time_ns()
                     if nb_voxels < 3.5e7:
                         predictor.predict_single_npy_array(images, properties, None, output_file_trunc, False)
                     elif nb_voxels < 6.9e7:
@@ -215,6 +215,7 @@ class Autopet_baseline:
                         print("Removing all mirroring")
                         predictor.allowed_mirroring_axes = None
                         predictor.predict_single_npy_array(images, properties, None, output_file_trunc, False)
+                    print(nb_voxels, (time.time_ns()-time_0)/1000000000)
 
 
 
