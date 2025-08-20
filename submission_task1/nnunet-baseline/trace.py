@@ -187,7 +187,7 @@ class Autopet_baseline:
             target_spacing = tuple(map(float, json.load(open(join(trained_model_path_fdg, "plans.json"), "r"))["configurations"][
                     "3d_fullres"]["spacing"]))
         fin_size = ct.shape
-        out = []
+        a= ""
         for i in [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]:
             for j in [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]:
                 for k in [100, 200, 300, 400, 500, 600, 700,800, 900, 1000]:
@@ -210,8 +210,8 @@ class Autopet_baseline:
                     predictor.allowed_mirroring_axes = None
                     print(nb_voxels, (time.time_ns()-time_0)/1000000000)
 
-                    out.append((nb_voxels, (time.time_ns()-time_0)/1000000000))
-
+                    a+=f"{nb_voxels},{(time.time_ns()-time_0)/1000000000};"
+                    print(a)
         out_image = SimpleITK.ReadImage(output_file_trunc+".mha")
         out_np = SimpleITK.GetArrayFromImage(out_image)
         print(out_np.shape)
@@ -222,9 +222,6 @@ class Autopet_baseline:
         oneclass_np = np.zeros_like(pt)
         oneclass_np[out_np==1]=1
         '''
-        for (nb, time_) in out:
-            a+=f"{nb},{time_};"
-        print(a)
 
         out_np = remove_small_lowval_components_numpy(out_np, pt)
         print(np.sum(out_np))
