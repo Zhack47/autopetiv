@@ -38,4 +38,4 @@ ENV nnUNet_raw="/opt/algorithm/nnUNet_raw"
 ENV nnUNet_preprocessed="/opt/algorithm/nnUNet_preprocessed"
 ENV nnUNet_results="/opt/algorithm/nnUNet_results"
 
-ENTRYPOINT ["python", "-m", "trace"]
+ENTRYPOINT ["python", "-m", "process"]
