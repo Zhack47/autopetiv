@@ -30,7 +30,6 @@ COPY --chown=algorithm:algorithm deep_discriminator.py /opt/algorithm/
 COPY --chown=algorithm:algorithm smart_tracer_discriminator.py /opt/algorithm/
 COPY --chown=algorithm:algorithm process.py /opt/algorithm/
 COPY --chown=algorithm:algorithm trace.py /opt/algorithm/
-COPY --chown=algorithm:algorithm utils.py /opt/algorithm/
 COPY --chown=algorithm:algorithm heatmaps.py /opt/algorithm/
 COPY --chown=algorithm:algorithm post_process.py /opt/algorithm/
 
