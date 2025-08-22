@@ -97,11 +97,3 @@ if __name__ == "__main__":
         print(os.path.join("/mnt/disk_2/Zach/Autopet_Heatmaps", json_path.replace("_clicks.json", "_0002.nii.gz")))
         save_heatmap(pet_path, tumor_clicks, bg_clicks, os.path.join("/mnt/disk_2/Zach/Autopet_Heatmaps", json_path.replace("_clicks.json", "_0002.nii.gz")))
 
-
-
-# For local testing
-'''pet_path = "../../fdg_01140d52d8_08-13-2005-NA-PET-CT Ganzkoerper  primaer mit KM-56839.nii.gz"
-json_path = "../../FDG_PSMA_PETCT_pre-simulated_clicks/fdg_01140d52d8_08-13-2005-NA-PET-CT Ganzkoerper  primaer mit KM-56839_clicks.json"
-tumor_clicks, bg_clicks = get_coords(json_path)
-save_heatmap(pet_path, tumor_clicks, bg_clicks, json_path.replace("_clicks.json", "_0002.nii.gz").replace("FDG_PSMA_PETCT_pre-simulated_clicks/", ""))
-'''
