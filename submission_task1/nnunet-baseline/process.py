@@ -199,11 +199,15 @@ class Autopet_baseline:
         images = np.stack([ct, pt, hm])
         print("Done")
 
-        if nb_voxels < 1.8e7:
+        if nb_voxels < 2.5e7: # 1.8e7
             predictor.predict_single_npy_array(images, properties, None, output_file_trunc, False)
-        elif nb_voxels < 3.9e7:
+        elif nb_voxels < 3.9e7:  # 3.9e7
             print("Removing one axis for prediction mirroring")
             predictor.allowed_mirroring_axes = (1, 2)
+            predictor.predict_single_npy_array(images, properties, None, output_file_trunc, False)
+        elif nb_voxels < 9e7:  # Didn't exist before
+            print("Removing two axis for prediction mirroring")
+            predictor.allowed_mirroring_axes = (2)
             predictor.predict_single_npy_array(images, properties, None, output_file_trunc, False)
         else:
             print("Removing all mirroring")
