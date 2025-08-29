@@ -1,4 +1,158 @@
-\documentclass{article}
+\documentclass[runningheads]{llncs}
+%
+\renewcommand{\arraystretch}{1.5}
+\setlength{\tabcolsep}{12pt}
+\usepackage{float}
+\titlerunning{AutoPETIV CHB method}
+\usepackage{caption}
+\captionsetup[table]{skip=5pt}
+\usepackage[T1]{fontenc}
+\usepackage{orcidlink}
+\usepackage{amsfonts}
+% T1 fonts will be used to generate the final print and online PDFs,
+% so please use T1 fonts in your manuscript whenever possible.
+% Other font encondings may result in incorrect characters.
+%
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following two lines
+% to display URLs in blue roman font according to Springer's eBook style:
+%\usepackage{color}
+%\renewcommand\UrlFont{\color{blue}\rmfamily}
+
+
 \begin{document}
-Coucou les lapinous
+%
+
+
+\title{AutoPET IV: Semi-automatic PET/CT across tracers}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+
+
+\author{
+Zacharia Mesbah\inst{1,2,4} \and
+Solène Perret\inst{1,2,4} \and
+Leo Mottay\inst{1,2,4} \\
+}
+%
+
+\authorrunning{}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{INSA Rouen Normandie, Univ Rouen Normandie, Université Le Havre Normandie, Normandie Univ, LITIS UR 4108, F-76000 Rouen, France\\
+ \and 
+Nuclear Medicine Department, Henri Becquerel Cancer Center, Rouen, France\\ 
+\and 
+Radiotherapy Department, Henri Becquerel Cancer Center, Rouen, France \\ \and
+Siemens Healthineers\\
+\email{zacharia.mesbah@chb-unicancer.fr}
+}
+
+%
+\maketitle   
+%\def\thefootnote{*}\footnotetext{These authors contributed equally to this work}\def\thefootnote{\arabic{footnote}}% typeset the header of the contribution
+%
+\begin{abstract}
+
+For the last three years, the AutoPET competition gathered the medical imaging community around a hot topic: lesion segmentation on Positron Emitting Tomography (PET) scans. Each year a different aspect of the problem is presented; in 2024 the multiplicity of existing and used tracers was at the core of the challenge. Specifically, this year's edition aims to develop a fully automatic algorithm capable of performing lesion segmentation on a PET/CT scan, without knowing the tracer, which can either be a FDG or PSMA-based tracer.
+%
+In this paper we describe how we used the nnUNetv2\cite{isensee2018nnunet} framework to train two sets of 6 fold ensembles of models to perform fully automatic PET/CT lesion segmentation as well as a MIP-CNN to choose which set of models to use for segmentation.
+%
+ 
+
+\keywords{PET \and Functional Imaging  \and Segmentation \and Deep Learning}
+\end{abstract}
+
+
+\section{Introduction}
+When combined with Computed Tomography (CT), Positron Emission Tomography (PET) proves highly valuable, as it enables both the detection and monitoring of cancer. . PET/CT scans provide detailed metabolic and anatomical information. Currently, nuclear medicine physicians use only a subset of tumor lesions to evaluate tumor dynamics. From this subset of lesions, they extract only one-dimensional information about the diameter. Precise lesion segmentation could allow for the extraction of a larger proportion of the tumor’s morphological data. This could enable better assessment of cancer staging and more personalized treatment in the future. The problem is that manual segmentation is a time-consuming task, especially in cases of metastatic cancer. The solution lies in developing automatic lesion segmentation tools.
+
+Automated segmentation continues to face considerable challenges. One of the main challenges in developing a single segmentation model is the variation in physiological uptake between different PET tracers, such as FDG and PSMA. Models often struggle to distinguish between physiological and tumoral uptake. One approach to address this issue is to include a human expert in the segmentation loop. The expert’s role is to provide simple clicks to indicate whether a given pixel corresponds to a lesion or merely reflects physiological uptake. This method helps improve the model’s performance by reducing false positives and missed segmentations. Moreover, the clicks required from the expert are quick and minimally time-consuming. 
+
+The autoPET challenge was created to provide researchers with a platform to directly tackle these issues. Now in its fourth edition, the challenge continues to evolve and address increasingly complex scenarios. The objective of the previous edition (autoPET III) was to develop algorithms capable of segmenting lesions in PET/CT scans acquired using either FDG or PSMA tracers, without prior knowledge of which tracer had been used. This year, the challenge introduces an interactive human-in-the-loop segmentation scenario, adding a new dimension to the task. Similar to the previous edition, the setting remains multi-tracer and multi-center, further reflecting the variability and complexity encountered in real-world clinical imaging. 
+
+This manuscript presents our proposed solution submitted to the autoPET IV challenge for the first task: single-staging whole-body PET/CT lesion segmentation.
+
+% /home/zhack/.texmf/llncs.cls
+
+\section{Material and method}
+\subsection{Dataset}
+\subsubsection{Images}
+\subsubsection{Clicks}
+The dataset is split in three parts:
+
+\subsection{Our Method}
+\subsubsection{Heatmaps}
+Heatmaps are generated based on the input clicks following the procedure below.
+Tumor clicks and background clicks are processed differently.
+
+For tumor clicks, a zero-filled array named heatmap_tumor is first created with the same dimensions as the PET image. For each tumour click, the voxel at the corresponding coordinates is set to 1.
+All voxels within a certain distance of this voxel are also set to 1. A Gaussian filter is then applied to this local array, which is subsequently added to heatmap_tumor.
+Next, all voxels with an SUV value lower than the minimum between the SUV at the click location and 3 are set to zero.
+Finally, the values in heatmap_tumor are clipped to the range [0, 1]
+\subsubsection{Tracer Discriminator}
+Building on last year’s work, we also used a MIP-CNN network to automatically determine which tracer was used for the PET/CT scan.
+The output of this model defines the segmentation model which will be used to process the scan.
+This model is, as described in [ref notre papier autopet3], a convolutional neural network which processes a 2D Maximum Intensity Projection (MIP) of the PET volume.
+Depending on the output of this discriminator network, we run the inference using either the PSMA or the FDG model.
+Both of these models run as a 5-folds ensemble in classic nnUNet fashion. The number of allowed mirroring axes is determined dynamically based on the processed volume’s size (see below).
+
+\subsubsection{Segmentation Models}
+We used the nnUNet framework to train two ResidualEncoderUNet models, more precisely using the L sized architecture.
+The patch_size was set to [192,192,192], with remaining experiment parameters unchanged.
+The FDG model was trained for 350 iterations per epoch, the PSMA model was trained for 250 iterations per epoch.
+Each model was trained for 1500 epochs. 
+The trainers we used are modified versions of the ones proposed in [ref papier gagnant autopet 3], with the same data augmentation methods (including the misalignment data augmentation).
+
+Last year's winning solution relied on pretraining the model on a large medical imaging dataset. The weights of the pretrained model were made publicly available by the team after last year’s competition.
+We used these weights as the initial weights to train our models.
+
+\subsubsection{Additional Organs Supervision}
+Using organs as additional labels has been shown to increase the performance and in particular reducing the amount of false positives.
+We selected organs which exhibit tracer uptake without malignancy, namely the heart, brain, aorta, liver, spleen, prostate, parotid and submandibular glands as well as parts of the digestive system.
+We add the kidneys and bladder since they often contain high SUV values since they eliminate the tracer.
+Finally we include the lungs and skeleton as we hypothesize that including anatomical landmarks in the supervision makes it easier for the network to learn a coherent representation of human anatomy.
+We used a double headed model, with one segmentation head for lesions only and one for the organs' segmentation.
+At inference time, the organs segmentation head is disabled so we retrieve only a binary segmentation map: the lesions contours.
+
+\subsubsection{Post-Processing}
+During the AutoPETII competition, Alloula et al.\cite{alloula2024autopetchallenge2023nnunetbased} showed that the trained segmentation models tend to output more small components in their segmentation than are initially present in the dataset.
+To deal with this inconsistency, they removed single connected components smaller than a fixed number of voxels.
+Through experiments they found the optimal threshold to be around 10 voxels.
+We adapted this small components removal method to PET scans by removing single connected components both smaller than 10 voxels and having a maximum SUV value lower than 4.
+This aims to further reduce the number of false positives.
+
+\subsubsection{Dynamic Inference Depth}
+Inference must run in less than 15 minutes per case.
+Depending on the dimensions of the input image, our algorithm takes a different amount of time to run, mainly due to the fact that the number of forward passes needed depends on the number of patches needed to cover the volumes.
+Instead of playing it safe for all patients by removing mirroring altogether, we developed a dynamic algorithm which maximizes the number of allowed axes while respecting the time limit.
+For this algorithm, we looked for the optimal voxels number thresholds for the number of allowed mirroring axes, considering that each axis we remove roughly means a 2x speedup.
+We ran the inference algorithm with no mirroring for values for all dimensions ranging from 100 to 1000 voxels and measured the runtime for each combination.
+Considering the difference in performance between our GPU (Quadro P6000) and the one proposed by grand-challenge (Tesla T4), we chose to set the threshold for 1 mirroring axis at 90 millions voxels, 2 mirroring axes at 39M voxels and all 3 axes at 18M voxels.
+
+\section{Results}
+Using this method, we reached first place in the preliminary test set.
+More importantly, our method showed strong performance over all the used metrics: Dice Score, False Positive Volume and False Negative Volume.
+
+\section{Discussion}
+\subesection{Limitations}
+For post-processing we use a number of voxels instead of a real volume (e.g.: 200 cubic millimeters) as threshold.
+
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+\bibliographystyle{unsrt}
+\bibliography{mybibliography}
+%
+
 \end{document}
