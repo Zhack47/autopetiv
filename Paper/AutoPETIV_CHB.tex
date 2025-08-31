@@ -72,11 +72,25 @@ In this paper we describe how we used the nnUNetv2\cite{isensee2018nnunet} frame
 
 
 \section{Introduction}
-When combined with Computed Tomography (CT), Positron Emission Tomography (PET) proves highly valuable, as it enables both the detection and monitoring of cancer. . PET/CT scans provide detailed metabolic and anatomical information. Currently, nuclear medicine physicians use only a subset of tumor lesions to evaluate tumor dynamics. From this subset of lesions, they extract only one-dimensional information about the diameter. Precise lesion segmentation could allow for the extraction of a larger proportion of the tumor’s morphological data. This could enable better assessment of cancer staging and more personalized treatment in the future. The problem is that manual segmentation is a time-consuming task, especially in cases of metastatic cancer. The solution lies in developing automatic lesion segmentation tools.
+When combined with Computed Tomography (CT), Positron Emission Tomography (PET) proves highly valuable, as it enables both the detection and monitoring of cancer by providing detailed metabolic and anatomical information.
+Currently, nuclear medicine physicians use only a subset of tumor lesions to evaluate tumor dynamics, from which they extract only one-dimensional information about the diameter.
+Precise lesion segmentation could allow for the extraction of a larger proportion of the tumor’s morphological data.
+This could enable better assessment of cancer staging and more personalized treatment in the future.
+The problem is that manual segmentation is a time-consuming task, especially in cases of metastatic cancer.
+The solution lies in developing automatic lesion segmentation tools.
 
-Automated segmentation continues to face considerable challenges. One of the main challenges in developing a single segmentation model is the variation in physiological uptake between different PET tracers, such as FDG and PSMA. Models often struggle to distinguish between physiological and tumoral uptake. One approach to address this issue is to include a human expert in the segmentation loop. The expert’s role is to provide simple clicks to indicate whether a given pixel corresponds to a lesion or merely reflects physiological uptake. This method helps improve the model’s performance by reducing false positives and missed segmentations. Moreover, the clicks required from the expert are quick and minimally time-consuming. 
+Automated segmentation continues to face considerable challenges, notably the variation in physiological uptake between different PET tracers, such as FDG and PSMA, hindering the development of a tracer-agnostic segmentation model.
+Models often struggle to distinguish between physiological and tumoral uptake.
+One approach to address this issue is to include a human expert in the segmentation loop.
+The expert's role is to provide simple clicks to indicate whether a given pixel corresponds to a lesion or merely reflects physiological uptake.
+This method helps improve the model's performance by reducing false positives and missed segmentations.
+Moreover, the clicks required from the expert are quick and minimally time-consuming. 
 
-The autoPET challenge was created to provide researchers with a platform to directly tackle these issues. Now in its fourth edition, the challenge continues to evolve and address increasingly complex scenarios. The objective of the previous edition (autoPET III) was to develop algorithms capable of segmenting lesions in PET/CT scans acquired using either FDG or PSMA tracers, without prior knowledge of which tracer had been used. This year, the challenge introduces an interactive human-in-the-loop segmentation scenario, adding a new dimension to the task. Similar to the previous edition, the setting remains multi-tracer and multi-center, further reflecting the variability and complexity encountered in real-world clinical imaging. 
+The autoPET challenge was created to provide researchers with a platform to directly tackle these issues.
+Now in its fourth edition, the challenge continues to evolve and address increasingly complex scenarios.
+The objective of the previous edition (autoPET III) was to develop algorithms capable of segmenting lesions in PET/CT scans acquired using either FDG or PSMA tracers, without prior knowledge of which tracer had been used.
+This year, the challenge introduces an interactive human-in-the-loop segmentation scenario, adding a new dimension to the task.
+Similar to the previous edition, the setting remains multi-tracer and multi-center, further reflecting the variability and complexity encountered in real-world clinical imaging. 
 
 This manuscript presents our proposed solution submitted to the autoPET IV challenge for the first task: single-staging whole-body PET/CT lesion segmentation.
 
@@ -85,31 +99,56 @@ This manuscript presents our proposed solution submitted to the autoPET IV chall
 \section{Material and method}
 \subsection{Dataset}
 \subsubsection{Images}
+
+The dataset consists of PET/CT images acquired using two distinct tracers: FDG and PSMA.
+The FDG cohort comprises 1,014 studies, including 501 patients with cancer and 513 healthy individuals.
+The PSMA cohort contains scans from 597 patients diagnosed with prostate cancer.
+All imaging data were collected from two clinical centers: University Hospital Tübingen, Germany (UKT), and LMU Hospital, LMU Munich, Germany (LMU).
+Three different PET/CT scanners were used for image acquisition: Siemens Biograph 64-4R TruePoint, Siemens Biograph mCT Flow 20, and GE Discovery 690.
+In addition to the imaging data, lesion segmentations were provided.
+These annotations were performed by different radiologists, depending on the originating medical center.
+
 \subsubsection{Clicks}
-The dataset is split in three parts:
+Furthermore, expert clicks—represented as sets of 3D coordinates—are included for each image.
+Each click is labeled as either background or tumor, indicating the corresponding region type.
+These clicks serve as a form of weak supervision to guide the network toward relevant anatomical or pathological areas during training.
 
 \subsection{Our Method}
 \subsubsection{Heatmaps}
+
 Heatmaps are generated based on the input clicks following the procedure below.
 Tumor clicks and background clicks are processed differently.
-
-For tumor clicks, a zero-filled array named heatmap_tumor is first created with the same dimensions as the PET image. For each tumour click, the voxel at the corresponding coordinates is set to 1.
-All voxels within a certain distance of this voxel are also set to 1. A Gaussian filter is then applied to this local array, which is subsequently added to heatmap_tumor.
+For tumor clicks, a zero-filled array named $heatmap_{tumor}$ is first created with the same dimensions as the PET image.
+For each tumour click, we create a zero-filled local array of the same size, then the voxel at the corresponding coordinates is set to 1 in the local array.
+A Gaussian filter is then applied to this local array, which is subsequently added to $heatmap_{tumor}$.
 Next, all voxels with an SUV value lower than the minimum between the SUV at the click location and 3 are set to zero.
-Finally, the values in heatmap_tumor are clipped to the range [0, 1]
+Finally, the values in $heatmap_{tumor}$ are clipped to the range [0, 1].
+
+For background clicks, a zero-filled array named $heatmap_{background}$ is created with the same dimensions as the PET image.
+For each background click, the voxel at the corresponding coordinates is set to 1.
+Once all clicks are processed we apply a gaussian filter on the whole array.
+Then all voxels with a value greater than zero in the $heatmap_{tumor}$ array are set to zero in $heatmap_{background}$.
+The final heatmap is computed as $heatmap_{tumor} - heatmap_{background}$.
+
+In the final heatmap, voxels with a positive value represent parts of the volume influenced by a positive click, likely to be part of a lesion.
+In the opposite, voxels with negative values represent parts of the volume influenced by a negative click.
+The network should learn to avoid classifying voxels in this area as part of a lesion.
+
 \subsubsection{Tracer Discriminator}
-Building on last year’s work, we also used a MIP-CNN network to automatically determine which tracer was used for the PET/CT scan.
+
+Building on last year's work, we also used a MIP-CNN network to automatically determine which tracer was used for the PET/CT scan.
 The output of this model defines the segmentation model which will be used to process the scan.
-This model is, as described in [ref notre papier autopet3], a convolutional neural network which processes a 2D Maximum Intensity Projection (MIP) of the PET volume.
+This model is, as described in \cite{mesbah2024autopetiiitracerfrontierfrontier}, a convolutional neural network which processes a 2D Maximum Intensity Projection (MIP) of the PET volume.
 Depending on the output of this discriminator network, we run the inference using either the PSMA or the FDG model.
 Both of these models run as a 5-folds ensemble in classic nnUNet fashion. The number of allowed mirroring axes is determined dynamically based on the processed volume’s size (see below).
 
 \subsubsection{Segmentation Models}
+
 We used the nnUNet framework to train two ResidualEncoderUNet models, more precisely using the L sized architecture.
-The patch_size was set to [192,192,192], with remaining experiment parameters unchanged.
+The patch size was set to $[192,192,192]$, with remaining experiment parameters unchanged.
 The FDG model was trained for 350 iterations per epoch, the PSMA model was trained for 250 iterations per epoch.
 Each model was trained for 1500 epochs. 
-The trainers we used are modified versions of the ones proposed in [ref papier gagnant autopet 3], with the same data augmentation methods (including the misalignment data augmentation).
+The trainers we used are modified versions of the ones proposed in \cite{rokuss2024fdgpsmahitchhikersguide}, with the same data augmentation methods (including the misalignment data augmentation).
 
 Last year's winning solution relied on pretraining the model on a large medical imaging dataset. The weights of the pretrained model were made publicly available by the team after last year’s competition.
 We used these weights as the initial weights to train our models.
@@ -142,7 +181,8 @@ Using this method, we reached first place in the preliminary test set.
 More importantly, our method showed strong performance over all the used metrics: Dice Score, False Positive Volume and False Negative Volume.
 
 \section{Discussion}
-\subesection{Limitations}
+We designed a strong, robust automated PET/CT segmentation method which works in a human-in-the-loop scenario with input clicks. 
+\subsection{Limitations}
 For post-processing we use a number of voxels instead of a real volume (e.g.: 200 cubic millimeters) as threshold.
 
 %
@@ -152,7 +192,7 @@ For post-processing we use a number of voxels instead of a real volume (e.g.: 20
 % References will then be sorted and formatted in the correct style.
 %
 \bibliographystyle{unsrt}
-\bibliography{mybibliography}
+\bibliography{mybibliography.bib}
 %
 
 \end{document}
